@@ -64,10 +64,13 @@ def get_ai_response(user_input):
     """Generate a response from OpenAI GPT-4."""
     try:
         response = client.chat.completions.create(
-            model="gpt-4",
-            messages=[{"role": "user", "content": user_input}],
-            max_tokens=150
-        )
+    model="gpt-3.5-turbo",
+    messages=[
+        {"role": "system", "content": "You are an expert, give a short and precise answer based on the user question. Answer in Vietnamese"},
+        {"role": "user", "content": user_input}
+    ],
+    max_tokens=150
+)
         return response.choices[0].message.content
     except Exception as e:
         print(f"GPT-4 error: {str(e)}")
@@ -84,3 +87,4 @@ def text_to_speech(text):
         response.stream_to_file(OUTPUT_FILE)
     except Exception as e:
         print(f"TTS error: {str(e)}")
+
