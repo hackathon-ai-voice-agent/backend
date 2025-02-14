@@ -18,15 +18,18 @@ This is a simple voice-based chatbot using FastAPI and OpenAI APIs. The user spe
 ### 1️⃣ Install Dependencies  
 ```bash
 pip install -r requirements.txt
+```
 
 ### 2️⃣ Set Up Environment Variables
 Create a `.env` file and add:  
 ```env
 OPENAI_API_KEY=your_openai_api_key
+```
 
 ### 3️⃣ Run the Backend
 ```bash
 uvicorn main:app --reload
+```
 
 ### 4️⃣  Run the Frontend
 Open index.html in your browser.
@@ -48,6 +51,6 @@ User speaks 🎤
 🎤 Upload and Get Response
 ```http
 POST /upload/
-
+```
 - Input: Audio file (.wav)
 - Output: AI voice response (.mp3)
