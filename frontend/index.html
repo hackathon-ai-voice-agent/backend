@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice AI Chat</title>
+</head>
+<body>
+    <h1>Talk to AI</h1>
+    <p id="status">Press the button and speak...</p>
+    <button id="recordBtn">🎤 Record</button>
+    <audio id="audioPlayer" controls></audio>
+
+    <script>
+        let mediaRecorder;
+        let audioChunks = [];
+
+        document.getElementById("recordBtn").addEventListener("click", async () => {
+            // Step 1: Request microphone access
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+            audioChunks = [];
+
+            mediaRecorder.ondataavailable = event => {
+                audioChunks.push(event.data);
+            };
+
+            mediaRecorder.onstop = async () => {
+                // Step 2: Convert recorded audio to a Blob and send it to the backend
+                const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+                const formData = new FormData();
+                formData.append("file", audioBlob, "recording.wav");
+
+                document.getElementById("status").innerText = "Processing...";
+
+                try {
+                    const response = await fetch("http://127.0.0.1:8000/upload/", {
+                        method: "POST",
+                        body: formData
+                    });
+
+                    if (!response.ok) throw new Error("Server error");
+
+                    // Step 3: Get MP3 response and play it
+                    const audioBlob = await response.blob();
+                    const audioURL = URL.createObjectURL(audioBlob);
+                    const audioPlayer = document.getElementById("audioPlayer");
+
+                    audioPlayer.src = audioURL;
+                    audioPlayer.play();  // 🔊 Play AI response
+
+                    document.getElementById("status").innerText = "Listening to AI...";
+
+                    audioPlayer.onended = () => {
+                        document.getElementById("status").innerText = "Press the button and speak...";
+                    };
+
+                } catch (error) {
+                    console.error("Error:", error);
+                    document.getElementById("status").innerText = "Failed to communicate with the server.";
+                }
+            };
+
+            // Step 4: Start recording
+            mediaRecorder.start();
+            document.getElementById("status").innerText = "Recording...";
+
+            setTimeout(() => {
+                mediaRecorder.stop();
+                document.getElementById("status").innerText = "Uploading...";
+            }, 5000);
+        });
+    </script>
+</body>
+</html>

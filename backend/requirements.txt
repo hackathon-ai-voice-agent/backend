@@ -1,0 +1,9 @@
+fastapi 
+uvicorn 
+python-multipart 
+openai 
+python-dotenv 
+websockets
+numpy
+aiofiles
+fastapi[all]
